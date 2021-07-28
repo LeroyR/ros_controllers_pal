@@ -62,6 +62,9 @@ Changelog for package forward_command_controller
 0.4.1 (2020-04-02)
 ------------------
 
+Forthcoming
+-----------
+
 0.13.1 (2017-11-06)
 -------------------
 * Update changelogs
