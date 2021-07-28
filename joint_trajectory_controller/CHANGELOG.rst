@@ -100,8 +100,8 @@ Changelog for package joint_trajectory_controller
 * Decoupling joint_trajectory_controller hardware handler and adapter
 * Contributors: Jordan Palacios, Sai Kishor Kothakota, jordanpalacios
 
-Forthcoming
------------
+0.4.2 (2021-07-28)
+------------------
 
 0.13.1 (2017-11-06)
 -------------------

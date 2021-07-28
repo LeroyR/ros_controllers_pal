@@ -71,8 +71,8 @@ Changelog for package temperature_sensor_controller
 0.4.1 (2020-04-02)
 ------------------
 
-Forthcoming
------------
+0.4.2 (2021-07-28)
+------------------
 * Merge branch 'c++11_compatability' into 'erbium-devel'
   added c++11 compilation option
   See merge request control/ros_controllers!48

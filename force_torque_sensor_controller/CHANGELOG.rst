@@ -70,8 +70,8 @@ Changelog for package force_torque_sensor_controller
 * Added FT sensor temperature report
 * Contributors: Jordan Palacios, jordanpalacios
 
-Forthcoming
------------
+0.4.2 (2021-07-28)
+------------------
 
 0.13.1 (2017-11-06)
 -------------------
