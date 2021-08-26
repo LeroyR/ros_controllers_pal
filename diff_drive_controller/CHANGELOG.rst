@@ -132,6 +132,15 @@ Changelog for package diff_drive_controller
 0.4.2 (2021-07-28)
 ------------------
 
+Forthcoming
+-----------
+* Merge branch 'gallium-fixes' into 'erbium-devel'
+  Fixes for gallium
+  See merge request control/ros_controllers!50
+* Fixed deprecated xacro lone tags
+* Use xacro instead of xacro.py
+* Contributors: Jordan Palacios, saikishor
+
 0.13.1 (2017-11-06)
 -------------------
 * Update changelogs
