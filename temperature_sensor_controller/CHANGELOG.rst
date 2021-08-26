@@ -79,8 +79,8 @@ Changelog for package temperature_sensor_controller
 * added c++11 compilation option
 * Contributors: Jordan Palacios, Sai Kishor Kothakota
 
-Forthcoming
------------
+0.4.3 (2021-08-26)
+------------------
 
 0.13.1 (2017-11-06)
 -------------------

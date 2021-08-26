@@ -103,8 +103,8 @@ Changelog for package joint_trajectory_controller
 0.4.2 (2021-07-28)
 ------------------
 
-Forthcoming
------------
+0.4.3 (2021-08-26)
+------------------
 * Merge branch 'gallium-fixes' into 'erbium-devel'
   Fixes for gallium
   See merge request control/ros_controllers!50
