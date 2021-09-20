@@ -82,9 +82,9 @@ TEST_F(FourWheelSteeringControllerTest, testCrab)
   const double dx = new_odom.pose.pose.position.x - old_odom.pose.pose.position.x;
   const double dy = new_odom.pose.pose.position.y - old_odom.pose.pose.position.y;
   const double dz = new_odom.pose.pose.position.z - old_odom.pose.pose.position.z;
-  EXPECT_NEAR(sqrt(dx*dx + dy*dy), cmd_vel.speed*actual_travel_time, POSITION_TOLERANCE);
-  EXPECT_NEAR(dx, cmd_vel.speed*actual_travel_time*cos(cmd_vel.front_steering_angle), POSITION_TOLERANCE);
-  EXPECT_NEAR(dy, cmd_vel.speed*actual_travel_time*sin(cmd_vel.front_steering_angle), POSITION_TOLERANCE);
+  EXPECT_NEAR(sqrt(dx*dx + dy*dy), cmd_vel.speed*actual_travel_time, POSITION_TOLERANCE + 0.05);
+  EXPECT_NEAR(dx, cmd_vel.speed*actual_travel_time*cos(cmd_vel.front_steering_angle), POSITION_TOLERANCE + 0.05);
+  EXPECT_NEAR(dy, cmd_vel.speed*actual_travel_time*sin(cmd_vel.front_steering_angle), POSITION_TOLERANCE + 0.05);
   EXPECT_LT(fabs(dz), EPS);
 
   // convert to rpy and test that way
