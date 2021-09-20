@@ -76,6 +76,9 @@ Changelog for package joint_torque_sensor_state_controller
 0.4.3 (2021-08-26)
 ------------------
 
+Forthcoming
+-----------
+
 0.13.1 (2017-11-06)
 -------------------
 

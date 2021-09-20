@@ -141,6 +141,9 @@ Changelog for package diff_drive_controller
 * Use xacro instead of xacro.py
 * Contributors: Jordan Palacios, saikishor
 
+Forthcoming
+-----------
+
 0.13.1 (2017-11-06)
 -------------------
 * Update changelogs
