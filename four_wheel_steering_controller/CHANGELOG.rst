@@ -104,8 +104,8 @@ Changelog for package four_wheel_steering_controller
 0.4.3 (2021-08-26)
 ------------------
 
-Forthcoming
------------
+0.4.4 (2021-09-20)
+------------------
 * Increase tolerance for spurious test failure
 * Contributors: Victor Lopez
 
