@@ -57,6 +57,7 @@ private:
   boost::shared_ptr<realtime_tools::RealtimePublisher<sensor_msgs::JointState> > realtime_pub_;
   ros::Time last_publish_time_;
   double publish_rate_;
+  bool print_warnings_;
   bool publish_absolute_position_, publish_torque_;
   unsigned int num_hw_actuators_;  ///< Number of actuators present in the
                                    /// ActuatorStateInterface,

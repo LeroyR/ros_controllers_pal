@@ -51,6 +51,7 @@ bool ActuatorStateController::init(hardware_interface::ActuatorStateInterface* h
     realtime_pub_->msg_.velocity.push_back(0.0);
     realtime_pub_->msg_.effort.push_back(0.0);
   }
+  print_warnings_ = true;
   return true;
 }
 
@@ -74,18 +75,34 @@ void ActuatorStateController::update(const ros::Time& time, const ros::Duration&
       realtime_pub_->msg_.header.stamp = time;
       for (unsigned i = 0; i < num_hw_actuators_; i++)
       {
-        if (publish_absolute_position_)
+        if (publish_absolute_position_ && actuator_state_[i].hasAbsolutePosition())
+        {
           realtime_pub_->msg_.position[i] = actuator_state_[i].getAbsolutePosition();
+        }
         else
+        {
+          if (publish_absolute_position_ && print_warnings_)
+          {
+            ROS_WARN_STREAM("There is no absolute encoder on the actuator : "
+                            << actuator_state_[i].getName()
+                            << " , publishing incremental position instead!");
+          }
           realtime_pub_->msg_.position[i] = actuator_state_[i].getPosition();
+        }
         realtime_pub_->msg_.velocity[i] = actuator_state_[i].getVelocity();
-        if (!publish_torque_)
-          realtime_pub_->msg_.effort[i] = actuator_state_[i].getEffort();
-        else
+        if (publish_torque_ && actuator_state_[i].hasTorqueSensor())
           realtime_pub_->msg_.effort[i] = actuator_state_[i].getTorqueSensor();
+        else
+        {
+          if (publish_torque_ && print_warnings_)
+            ROS_WARN_STREAM("There is no torque sensor on the actuator : "
+                            << actuator_state_[i].getName() << " , publishing current instead!");
+          realtime_pub_->msg_.effort[i] = actuator_state_[i].getEffort();
+        }
       }
-      realtime_pub_->unlockAndPublish();
     }
+    realtime_pub_->unlockAndPublish();
+    print_warnings_ = false;
   }
 }
 
