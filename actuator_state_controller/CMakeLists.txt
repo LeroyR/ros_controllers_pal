@@ -49,3 +49,15 @@ install(FILES actuator_state_plugin.xml
               actuator_state_controller.yaml
               actuator_state_controller.launch
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
+
+#############
+## Test ##
+#############
+if(CATKIN_ENABLE_TESTING)
+  find_package(rostest REQUIRED)
+
+  add_rostest_gtest(actuator_state_controller_test
+                    test/actuator_state_controller.test
+                    test/actuator_state_controller_test.cpp)
+  target_link_libraries(actuator_state_controller_test ${PROJECT_NAME})
+endif()
