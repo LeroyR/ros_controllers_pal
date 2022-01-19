@@ -54,7 +54,7 @@ public:
 
 private:
   std::vector<hardware_interface::ActuatorStateHandle> actuator_state_;
-  boost::shared_ptr<realtime_tools::RealtimePublisher<sensor_msgs::JointState> > realtime_pub_;
+  std::shared_ptr<realtime_tools::RealtimePublisher<sensor_msgs::JointState> > realtime_pub_;
   ros::Time last_publish_time_;
   double publish_rate_;
   bool print_warnings_;

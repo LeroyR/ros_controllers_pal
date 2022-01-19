@@ -39,8 +39,8 @@ bool ActuatorStateController::init(hardware_interface::ActuatorStateInterface* h
   publish_torque_ = controller_nh.param<bool>("publish_torque", true);
 
   // realtime publisher
-  realtime_pub_.reset(
-      new realtime_tools::RealtimePublisher<sensor_msgs::JointState>(root_nh, topic_name, 4));
+  realtime_pub_ = std::make_shared<realtime_tools::RealtimePublisher<sensor_msgs::JointState>>(
+      root_nh, topic_name, 4);
 
   // get actuators and allocate message
   for (unsigned i = 0; i < num_hw_actuators_; i++)
