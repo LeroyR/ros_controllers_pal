@@ -2,8 +2,8 @@
 Changelog for package actuator_state_controller
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.4.5 (2022-01-20)
+------------------
 * Merge branch 'actuator_state' into 'erbium-devel'
   added the actuator_state_controller package for actuator_states topic
   See merge request control/ros_controllers!51
