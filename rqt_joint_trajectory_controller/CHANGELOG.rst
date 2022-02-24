@@ -84,8 +84,8 @@ Changelog for package rqt_joint_trajectory_controller
 0.4.5 (2022-01-20)
 ------------------
 
-Forthcoming
------------
+0.4.6 (2022-02-24)
+------------------
 * Merge branch 'gallium_fixes_rqt_joint_trajectory_controller' into 'erbium-devel'
   added fixes to support for python3
   See merge request control/ros_controllers!52
