@@ -48,6 +48,8 @@
 
 #include <diff_drive_controller/diff_drive_controller.h>
 
+#include <boost/algorithm/string.hpp>
+
 static double euclideanOfVectors(const urdf::Vector3& vec1, const urdf::Vector3& vec2)
 {
   return std::sqrt(std::pow(vec1.x-vec2.x,2) +
@@ -162,12 +164,15 @@ namespace diff_drive_controller{
     , base_frame_id_("base_link")
     , odom_frame_id_("odom")
     , enable_odom_tf_(true)
+    , error_mode_check_(false)
+    , error_mode_timeout_(1.0)
+    , start_error_time_(0.0)
     , wheel_joints_size_(0)
     , publish_cmd_(false)
   {
   }
 
-  bool DiffDriveController::init(hardware_interface::VelocityJointInterface* hw,
+  bool DiffDriveController::init(hardware_interface::RobotHW *hw,
             ros::NodeHandle& root_nh,
             ros::NodeHandle &controller_nh)
   {
@@ -255,6 +260,13 @@ namespace diff_drive_controller{
     controller_nh.param("enable_odom_tf", enable_odom_tf_, enable_odom_tf_);
     ROS_INFO_STREAM_NAMED(name_, "Publishing to tf is " << (enable_odom_tf_?"enabled":"disabled"));
 
+    controller_nh.param("error_mode_check", error_mode_check_, error_mode_check_);
+    ROS_INFO_STREAM_NAMED(name_, "Checking error mode is " << (error_mode_check_?"enabled":"disabled"));
+
+    controller_nh.param("error_mode_timeout", error_mode_timeout_, error_mode_timeout_);
+    ROS_INFO_STREAM_NAMED(name_, "Error mode timeout is " << error_mode_timeout_);
+
+
     // Velocity and acceleration limits:
     controller_nh.param("linear/x/has_velocity_limits"    , limiter_lin_.has_velocity_limits    , limiter_lin_.has_velocity_limits    );
     controller_nh.param("linear/x/has_acceleration_limits", limiter_lin_.has_acceleration_limits, limiter_lin_.has_acceleration_limits);
@@ -311,14 +323,38 @@ namespace diff_drive_controller{
     }
 
     // Get the joint object to use in the realtime loop
+    std::vector<std::string> motor_names;
     for (size_t i = 0; i < wheel_joints_size_; ++i)
     {
       ROS_INFO_STREAM_NAMED(name_,
                             "Adding left wheel with joint name: " << left_wheel_names[i]
                             << " and right wheel with joint name: " << right_wheel_names[i]);
-      left_wheel_joints_[i] = hw->getHandle(left_wheel_names[i]);  // throws on failure
-      right_wheel_joints_[i] = hw->getHandle(right_wheel_names[i]);  // throws on failure
+      hardware_interface::VelocityJointInterface* vel_interface = hw->get<hardware_interface::VelocityJointInterface>();
+      left_wheel_joints_[i] = vel_interface->getHandle(left_wheel_names[i]);  // throws on failure
+      right_wheel_joints_[i] = vel_interface->getHandle(right_wheel_names[i]);  // throws on failure
+
+      if(error_mode_check_)
+      {
+        std::string left_name = left_wheel_names[i];
+        boost::replace_last(left_name, "_joint", "_motor");
+        std::string right_name = right_wheel_names[i];
+        boost::replace_last(right_name, "_joint", "_motor");
+        motor_names.push_back(left_name);
+        motor_names.push_back(right_name);
+      }
     }
+
+    if(error_mode_check_)
+    {
+      for(size_t i = 0; i  < motor_names.size(); i++)
+      {
+        ROS_INFO_STREAM("Registering joint mode interface for actuator: " << motor_names[i]);
+        hardware_interface::JointModeInterface* mode_interface =
+            hw->get<hardware_interface::JointModeInterface>();
+        actuator_modes_.push_back(mode_interface->getHandle(motor_names[i]));
+      }
+    }
+
 
     sub_command_ = controller_nh.subscribe("cmd_vel", 1, &DiffDriveController::cmdVelCallback, this);
 
@@ -437,6 +473,31 @@ namespace diff_drive_controller{
       curr_cmd.ang = 0.0;
     }
 
+    if (error_mode_check_)
+    {
+      bool is_in_error_mode = false;
+      for (size_t i = 0; i < actuator_modes_.size(); i++)
+      {
+        if (actuator_modes_[i].getMode() == hardware_interface::JointCommandModes::ERROR ||
+            actuator_modes_[i].getMode() == hardware_interface::JointCommandModes::EMERGENCY_STOP ||
+            actuator_modes_[i].getMode() == hardware_interface::JointCommandModes::NOMODE ||
+            actuator_modes_[i].getMode() == hardware_interface::JointCommandModes::SWITCHING)
+        {
+          is_in_error_mode = true;
+          break;
+        }
+      }
+
+      if (!is_in_error_mode)
+        start_error_time_ = time;
+
+      if ((time - start_error_time_).toSec() >= error_mode_timeout_)
+      {
+        curr_cmd.lin = 0.0;
+        curr_cmd.ang = 0.0;
+      }
+    }
+
     // Limit velocities and accelerations:
     const double cmd_dt(period.toSec());
 
@@ -475,6 +536,8 @@ namespace diff_drive_controller{
     last_state_publish_time_ = time;
 
     odometry_.init(time);
+
+    start_error_time_ = time;
   }
 
   void DiffDriveController::stopping(const ros::Time& /*time*/)

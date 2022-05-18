@@ -51,6 +51,8 @@
 #include <diff_drive_controller/odometry.h>
 #include <diff_drive_controller/speed_limiter.h>
 #include <diff_drive_controller/DiffDriveControllerConfig.h>
+#include <hardware_interface/joint_mode_interface.h>
+#include <controller_interface/multi_interface_controller.h>
 
 namespace diff_drive_controller{
 
@@ -64,7 +66,7 @@ namespace diff_drive_controller{
    *  - a wheel joint frame center's vertical projection on the floor must lie within the contact patch
    */
   class DiffDriveController
-      : public controller_interface::Controller<hardware_interface::VelocityJointInterface>
+      : public controller_interface::MultiInterfaceController<hardware_interface::VelocityJointInterface, hardware_interface::JointModeInterface>
   {
   public:
     DiffDriveController();
@@ -75,7 +77,7 @@ namespace diff_drive_controller{
      * \param root_nh       Node handle at root namespace
      * \param controller_nh Node handle inside the controller namespace
      */
-    bool init(hardware_interface::VelocityJointInterface* hw,
+    bool init(hardware_interface::RobotHW* hw,
               ros::NodeHandle& root_nh,
               ros::NodeHandle &controller_nh);
 
@@ -109,6 +111,7 @@ namespace diff_drive_controller{
     /// Hardware handles:
     std::vector<hardware_interface::JointHandle> left_wheel_joints_;
     std::vector<hardware_interface::JointHandle> right_wheel_joints_;
+    std::vector<hardware_interface::JointModeHandle> actuator_modes_;
 
     /// Velocity command related:
     struct Commands
@@ -156,6 +159,11 @@ namespace diff_drive_controller{
 
     /// Whether to publish odometry to tf or not:
     bool enable_odom_tf_;
+
+    /// Check if motor is in error to send zero velocity:
+    bool error_mode_check_;
+    double error_mode_timeout_;
+    ros::Time start_error_time_;
 
     /// Number of wheel joints:
     size_t wheel_joints_size_;

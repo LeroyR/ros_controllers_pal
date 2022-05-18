@@ -36,6 +36,7 @@
 #include <controller_manager/controller_manager.h>
 #include <hardware_interface/joint_command_interface.h>
 #include <hardware_interface/joint_state_interface.h>
+#include <hardware_interface/joint_mode_interface.h>
 #include <hardware_interface/robot_hw.h>
 #include <realtime_tools/realtime_buffer.h>
 
@@ -53,6 +54,7 @@ public:
   : running_(true)
   , start_srv_(nh_.advertiseService("start", &Diffbot::start_callback, this))
   , stop_srv_(nh_.advertiseService("stop", &Diffbot::stop_callback, this))
+  , mode_(3)
   {
     // Intialize raw data
     std::fill_n(pos_, NUM_JOINTS, 0.0);
@@ -71,10 +73,14 @@ public:
 
       hardware_interface::JointHandle vel_handle(jnt_state_interface_.getHandle(os.str()), &cmd_[i]);
       jnt_vel_interface_.registerHandle(vel_handle);
+
+      hardware_interface::JointModeHandle mode_handle("wheel_" + std::to_string(i) + "_motor", &mode_);
+      jnt_mode_interface_.registerHandle(mode_handle);
     }
 
     registerInterface(&jnt_state_interface_);
     registerInterface(&jnt_vel_interface_);
+    registerInterface(&jnt_mode_interface_);
   }
 
   ros::Time getTime() const {return ros::Time::now();}
@@ -127,11 +133,13 @@ public:
 private:
   hardware_interface::JointStateInterface    jnt_state_interface_;
   hardware_interface::VelocityJointInterface jnt_vel_interface_;
+  hardware_interface::JointModeInterface     jnt_mode_interface_;
   double cmd_[NUM_JOINTS];
   double pos_[NUM_JOINTS];
   double vel_[NUM_JOINTS];
   double eff_[NUM_JOINTS];
   bool running_;
+  int mode_;
 
   ros::NodeHandle nh_;
   ros::ServiceServer start_srv_;
