@@ -150,8 +150,8 @@ Changelog for package diff_drive_controller
 0.4.6 (2022-02-24)
 ------------------
 
-Forthcoming
------------
+0.4.7 (2022-08-03)
+------------------
 * Merge branch 'error_mode_check_no_clang' into 'erbium-devel'
   Publish zero speed when one motor goes to error
   See merge request control/ros_controllers!54
