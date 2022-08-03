@@ -2,6 +2,9 @@
 Changelog for package actuator_state_controller
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.4.6 (2022-02-24)
 ------------------
 

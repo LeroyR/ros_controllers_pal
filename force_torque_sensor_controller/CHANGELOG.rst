@@ -85,6 +85,9 @@ Changelog for package force_torque_sensor_controller
 0.4.6 (2022-02-24)
 ------------------
 
+Forthcoming
+-----------
+
 0.13.1 (2017-11-06)
 -------------------
 * Update changelogs
