@@ -158,8 +158,8 @@ Changelog for package diff_drive_controller
 * Publish zero speed when one motor goes to error
 * Contributors: Adria Roig
 
-Forthcoming
------------
+0.4.8 (2022-11-29)
+------------------
 
 0.13.1 (2017-11-06)
 -------------------
