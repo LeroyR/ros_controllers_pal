@@ -123,6 +123,14 @@ Changelog for package joint_trajectory_controller
 0.4.7 (2022-08-03)
 ------------------
 
+Forthcoming
+-----------
+* Merge branch 'fix-sending-nans-at-start' into 'erbium-devel'
+  Avoid setting the nonfinite values to the joint handle
+  See merge request control/ros_controllers!55
+* Avoid setting the nonfinite values to the joint handle
+* Contributors: Jordan Palacios, saikishor
+
 0.13.1 (2017-11-06)
 -------------------
 * Update changelogs
