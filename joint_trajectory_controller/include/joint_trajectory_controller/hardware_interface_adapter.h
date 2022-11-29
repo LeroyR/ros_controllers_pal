@@ -112,7 +112,10 @@ public:
     // Semantic zero for commands
     for (unsigned int i = 0; i < joint_handles_ptr_->size(); ++i)
     {
-      (*joint_handles_ptr_)[i].setCommand((*joint_handles_ptr_)[i].getPosition());
+      if(std::isfinite((*joint_handles_ptr_)[i].getPosition()))
+      {
+        (*joint_handles_ptr_)[i].setCommand((*joint_handles_ptr_)[i].getPosition());
+      }
     }
   }
 
