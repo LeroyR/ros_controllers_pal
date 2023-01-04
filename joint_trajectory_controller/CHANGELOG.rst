@@ -131,6 +131,9 @@ Changelog for package joint_trajectory_controller
 * Avoid setting the nonfinite values to the joint handle
 * Contributors: Jordan Palacios, saikishor
 
+Forthcoming
+-----------
+
 0.13.1 (2017-11-06)
 -------------------
 * Update changelogs

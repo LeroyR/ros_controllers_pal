@@ -94,6 +94,9 @@ Changelog for package mode_state_controller
 0.4.8 (2022-11-29)
 ------------------
 
+Forthcoming
+-----------
+
 0.13.1 (2017-11-06)
 -------------------
 

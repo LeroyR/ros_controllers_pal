@@ -91,6 +91,11 @@ Changelog for package joint_torque_sensor_state_controller
 0.4.8 (2022-11-29)
 ------------------
 
+Forthcoming
+-----------
+* Change the joint_torque_sensor_state_controller spawner node name
+* Contributors: saikishor
+
 0.13.1 (2017-11-06)
 -------------------
 
