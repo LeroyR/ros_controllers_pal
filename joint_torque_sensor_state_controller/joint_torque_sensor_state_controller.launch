@@ -6,7 +6,7 @@
     file="$(find joint_torque_sensor_state_controller)/joint_torque_sensor_state_controller.yaml" />
 
   <!-- Spawn controller -->
-  <node name="introspection_spawner"
+  <node name="joint_torque_sensor_state_controller_spawner"
         pkg="controller_manager" type="spawner" output="screen"
         args="joint_torque_sensor_state_controller" />
 
