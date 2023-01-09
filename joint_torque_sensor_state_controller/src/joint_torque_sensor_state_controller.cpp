@@ -106,6 +106,11 @@ bool JointStateTorqueSensorController::init(hardware_interface::JointStateInterf
   // get joints and allocate message
   for (unsigned i=0; i<num_hw_joints_; i++){
     joint_state_.push_back(hw->getHandle(joint_names_[i]));
+    if(fabs(joint_state_[i].getAbsolutePosition()) > 2.0*M_PI)
+    {
+      ROS_WARN_STREAM("The joint : " << joint_state_[i].getName() << " absolute encoder position : " 
+        << joint_state_[i].getAbsolutePosition() << " is greater than 2PI, will use incremental in this case!");
+    }
     realtime_pub_->msg_.name.push_back(joint_names_[i]);
     realtime_pub_->msg_.position.push_back(0.0);
     realtime_pub_->msg_.velocity.push_back(0.0);
@@ -145,6 +150,12 @@ void JointStateTorqueSensorController::update(const ros::Time& time, const ros::
         realtime_pub_->msg_.velocity[i] = joint_state_[i].getVelocity();
         realtime_pub_->msg_.effort[i] = joint_state_[i].getTorqueSensor();
         if(use_relative_for_nans_ && std::isnan(realtime_pub_->msg_.position[i])){
+          realtime_pub_->msg_.position[i] = joint_state_[i].getPosition();
+        }
+        if(use_relative_for_nans_ && std::isnan(realtime_pub_->msg_.effort[i])){
+          realtime_pub_->msg_.effort[i] = joint_state_[i].getEffort();
+        }
+        if(fabs(realtime_pub_->msg_.position[i]) > 2.0*M_PI){
           realtime_pub_->msg_.position[i] = joint_state_[i].getPosition();
         }
 
