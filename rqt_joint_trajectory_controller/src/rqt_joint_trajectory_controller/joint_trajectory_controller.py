@@ -25,6 +25,7 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+from __future__ import print_function
 import os
 import rospy
 import rospkg
@@ -39,9 +40,9 @@ from controller_manager_msgs.utils\
     import ControllerLister, ControllerManagerLister
 from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
 
-from rqt_joint_trajectory_controller.double_editor import DoubleEditor
-from rqt_joint_trajectory_controller.joint_limits_urdf import get_joint_limits
-from rqt_joint_trajectory_controller.update_combo import update_combo
+from .double_editor import DoubleEditor
+from .joint_limits_urdf import get_joint_limits
+from .update_combo import update_combo
 
 # TODO:
 # - Better UI suppor for continuous joints (see DoubleEditor TODO)
@@ -120,6 +121,8 @@ class JointTrajectoryController(Plugin):
                                'joint_trajectory_controller.ui')
         loadUi(ui_file, self._widget)
         self._widget.setObjectName('JointTrajectoryControllerUi')
+        ns = rospy.get_namespace()[1:-1]
+        self._widget.controller_group.setTitle('ns: ' + ns)
 
         # Setup speed scaler
         speed_scaling = DoubleEditor(1.0, 100.0)
@@ -152,27 +155,27 @@ class JointTrajectoryController(Plugin):
 
         # Timer for sending commands to active controller
         self._update_cmd_timer = QTimer(self)
-        self._update_cmd_timer.setInterval(1000.0 / self._cmd_pub_freq)
+        self._update_cmd_timer.setInterval(int(1000.0 / self._cmd_pub_freq))
         self._update_cmd_timer.timeout.connect(self._update_cmd_cb)
 
         # Timer for updating the joint widgets from the controller state
         self._update_act_pos_timer = QTimer(self)
-        self._update_act_pos_timer.setInterval(1000.0 /
-                                               self._widget_update_freq)
+        self._update_act_pos_timer.setInterval(int(1000.0 /
+                                               self._widget_update_freq))
         self._update_act_pos_timer.timeout.connect(self._update_joint_widgets)
 
         # Timer for controller manager updates
         self._list_cm = ControllerManagerLister()
         self._update_cm_list_timer = QTimer(self)
-        self._update_cm_list_timer.setInterval(1000.0 /
-                                               self._ctrlrs_update_freq)
+        self._update_cm_list_timer.setInterval(int(1000.0 /
+                                               self._ctrlrs_update_freq))
         self._update_cm_list_timer.timeout.connect(self._update_cm_list)
         self._update_cm_list_timer.start()
 
         # Timer for running controller updates
         self._update_jtc_list_timer = QTimer(self)
-        self._update_jtc_list_timer.setInterval(1000.0 /
-                                                self._ctrlrs_update_freq)
+        self._update_jtc_list_timer.setInterval(int(1000.0 /
+                                                self._ctrlrs_update_freq))
         self._update_jtc_list_timer.timeout.connect(self._update_jtc_list)
         self._update_jtc_list_timer.start()
 
@@ -256,9 +259,8 @@ class JointTrajectoryController(Plugin):
         self._speed_scale = val / self._speed_scaling_widget.slider.maximum()
 
     def _on_joint_state_change(self, actual_pos):
-        #assert(len(actual_pos) == len(self._joint_pos))
-        #for name in actual_pos.keys():
-        for name in self._joint_pos.keys():
+        assert(len(actual_pos) == len(self._joint_pos))
+        for name in actual_pos.keys():
             self._joint_pos[name]['position'] = actual_pos[name]
 
     def _on_cm_change(self, cm_ns):
@@ -306,7 +308,6 @@ class JointTrajectoryController(Plugin):
         running_jtc = self._running_jtc_info()
         self._joint_names = next(_jtc_joint_names(x) for x in running_jtc
                                  if x.name == self._jtc_name)
-
         for name in self._joint_names:
             self._joint_pos[name] = {}
 
@@ -362,6 +363,7 @@ class JointTrajectoryController(Plugin):
         # Clear joint widgets
         # NOTE: Implementation is a workaround for:
         # https://bugreports.qt-project.org/browse/QTBUG-15990 :(
+					
         layout = self._widget.joint_group.layout()
         if layout is not None:
             while layout.count():
@@ -385,7 +387,6 @@ class JointTrajectoryController(Plugin):
         jtc_list = filter_by_type(controller_list,
                                   'JointTrajectoryController',
                                   match_substring=True)
-        jtc_list.extend(filter_by_type(controller_list, 'pal_wbc/', match_substring=True))
         running_jtc_list = filter_by_state(jtc_list, 'running')
         return running_jtc_list
 
@@ -413,6 +414,7 @@ class JointTrajectoryController(Plugin):
     def _update_cmd_cb(self):
         dur = []
         traj = JointTrajectory()
+        traj.header.stamp = rospy.Time.now()
         traj.joint_names = self._joint_names
         point = JointTrajectoryPoint()
         for name in traj.joint_names:
@@ -452,11 +454,7 @@ def _jtc_joint_names(jtc_info):
     # NOTE: We assume that there is at least one hardware interface that
     # claims resources (there should be), and the resource list is fetched
     # from the first available interface
-    #return jtc_info.claimed_resources[0].resources
-    names = [];
-    for claimed_res in jtc_info.claimed_resources:
-        names.extend(claimed_res.resources)
-    return names
+    return jtc_info.claimed_resources[0].resources
 
 def _resolve_controller_ns(cm_ns, controller_name):
     """
