@@ -2,8 +2,7 @@ cmake_minimum_required(VERSION 2.8.3)
 project(four_wheel_steering_controller)
 
 
-
-set(${PROJECT_NAME}_CATKIN_DEPS
+set(_CATKIN_DEPS
     controller_interface
     nav_msgs
     four_wheel_steering_msgs
@@ -12,12 +11,12 @@ set(${PROJECT_NAME}_CATKIN_DEPS
     urdf_geometry_parser
     controller_manager)
 
-find_package(catkin REQUIRED COMPONENTS ${${PROJECT_NAME}_CATKIN_DEPS})
+find_package(catkin REQUIRED COMPONENTS ${_CATKIN_DEPS})
 
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES ${PROJECT_NAME}
-  CATKIN_DEPENDS ${${PROJECT_NAME}_CATKIN_DEPS}
+  CATKIN_DEPENDS ${_CATKIN_DEPS}
 )
 
 include_directories(include)
